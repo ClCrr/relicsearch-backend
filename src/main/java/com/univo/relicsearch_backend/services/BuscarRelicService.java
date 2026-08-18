@@ -27,6 +27,15 @@ public class BuscarRelicService {
     // --- MÉTODOS NUEVOS ---
 
     public BuscarRelic extraerYGuardarContenido(Long relicId, Long usuarioId) {
+
+        List<BuscarRelic> extraccionesExistentes = obtenerExtraccionesDeReliquia(relicId, usuarioId);
+
+        if (!extraccionesExistentes.isEmpty()) {
+            // Si la lista no está vacía, significa que ya lo extrajo antes.
+            // Simplemente devolvemos el primero que encontremos y cancelamos la operación de guardado.
+            return extraccionesExistentes.get(0);
+        }
+
         // 1. Validamos que la reliquia exista y pertenezca a este usuario
         Relic relic = relicService.obtenerPorId(relicId, usuarioId);
 
@@ -39,7 +48,7 @@ public class BuscarRelicService {
         BuscarRelic extraccion = new BuscarRelic();
         extraccion.setTitulo(titulo);
         extraccion.setContenido(contenido);
-        extraccion.setUrl("https://wiki.warframe.com/wiki/" + titulo.replace(" ", "_"));
+        extraccion.setUrl("https://wiki.warframe.com/" + titulo.replace(" ", "_"));
         extraccion.setRelic(relic);
 
         return buscarRelicRepository.save(extraccion);
