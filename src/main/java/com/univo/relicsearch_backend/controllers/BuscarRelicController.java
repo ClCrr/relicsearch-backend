@@ -41,6 +41,14 @@ public class BuscarRelicController {
         return ResponseEntity.ok(response);
     }
 
+    // Extraer información de MediaWiki y guardarla
+    @PostMapping("/relics/{relicId}/contenidos/extract")
+    public ResponseEntity<BuscarRelicResponse> extraerContenido(@PathVariable Long relicId) {
+        Long usuarioId = obtenerUsuarioIdAutenticado();
+        BuscarRelic nuevaExtraccion = buscarRelicService.extraerYGuardarContenido(relicId, usuarioId);
+        return ResponseEntity.ok(new BuscarRelicResponse(nuevaExtraccion));
+    }
+
     // Eliminar un contenido específico
     @DeleteMapping("/contenidos/{id}")
     public ResponseEntity<Void> eliminarContenido(@PathVariable Long id) {
