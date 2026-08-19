@@ -1,4 +1,4 @@
-package com.univo.relicsearch_backend.config; // Ajusta el paquete según tu estructura
+package com.univo.relicsearch_backend.security; // Ajusta el paquete según tu estructura
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
