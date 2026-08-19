@@ -6,7 +6,7 @@ import com.univo.relicsearch_backend.dto.RegisterRequest;
 import com.univo.relicsearch_backend.services.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException; // <-- Importación actualizada
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -26,23 +26,22 @@ public class AuthController {
         return ResponseEntity.ok(authService.registrar(request));
     }
 
-    // 1. Cambiamos el tipo de retorno a ResponseEntity<?> para poder devolver tanto el AuthResponse como un Map de error.
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        System.out.println("---- 1. LLEGÓ LA PETICIÓN AL CONTROLADOR ----");
+        System.out.println("Email recibido: " + request.getEmail());
+
         try {
-            // 2. Ejecutamos la lógica de tu servicio
+            System.out.println("---- 2. ENTRANDO AL AUTH SERVICE ----");
             AuthResponse response = authService.login(request);
+
+            System.out.println("---- 3. LOGIN EXITOSO ----");
             return ResponseEntity.ok(response);
 
-        } catch (BadCredentialsException e) {
-            // 3. Atrapamos explícitamente las credenciales inválidas y devolvemos un 401
+        } catch (Exception e) {
+            System.out.println("---- 4. ERROR ATRAPADO EN CONTROLADOR: " + e.getMessage() + " ----");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Collections.singletonMap("error", "Usuario o contraseña incorrectos"));
-
-        } catch (Exception e) {
-            // 4. (Opcional) Capturamos cualquier otro error inesperado para evitar que Spring devuelva HTML
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Collections.singletonMap("error", "Error interno al procesar la solicitud"));
         }
     }
 }

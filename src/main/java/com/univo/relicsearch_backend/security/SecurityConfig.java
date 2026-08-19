@@ -1,5 +1,7 @@
 package com.univo.relicsearch_backend.security;
 
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,13 +28,28 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Deshabilitamos CSRF porque usamos JWT
+                // 1. DESHABILITAR FORMULARIO WEB Y BASIC AUTH (La clave para matar el 302)
+                .formLogin(form -> form.disable())
+                .httpBasic(basic -> basic.disable())
+
+                .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
+
+                // 2. MANEJO DE EXCEPCIONES PARA DEVOLVER 401 EN JSON
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\": \"No autorizado\"}");
+                        })
+                )
+
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // Rutas públicas (Login/Registro)
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/error").permitAll()
-                        .anyRequest().authenticated() // Todo lo demás requiere token
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -41,7 +58,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Para encriptar contraseñas
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
