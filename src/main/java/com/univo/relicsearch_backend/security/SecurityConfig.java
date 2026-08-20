@@ -70,7 +70,8 @@ public class SecurityConfig {
         // 1. Orígenes permitidos (Añade tu localhost y tu futuro dominio de Vercel)
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:4200",
-                "https://tu-frontend.vercel.app"
+                "https://tu-frontend.vercel.app",
+                "https://relicsearch-frontend-alpha.vercel.app"
         ));
 
         // 2. Métodos permitidos (El OPTIONS es obligatorio para CORS)
