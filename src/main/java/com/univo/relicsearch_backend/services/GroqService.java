@@ -31,7 +31,7 @@ public class GroqService {
 
         // 1. Tomamos el contenido real y lo recortamos a 3,000 caracteres.
         // (Esto es suficiente para que la IA lea el farmeo, pero pequeño para no saturar a Groq)
-        int limiteCaracteres = 3000;
+        int limiteCaracteres = 1500;
         String textoSeguro = contenidoWiki;
 
         if (textoSeguro != null && textoSeguro.length() > limiteCaracteres) {
